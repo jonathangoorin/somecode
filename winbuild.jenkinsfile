@@ -1,0 +1,72 @@
+node(label: 'windows'){
+
+    properties([
+     disableConcurrentBuilds(),
+     parameters([
+        choice(name: 'DCMAKE_BUILD_TYPE', choices: 'Release\nDebug\nRelWithDebInfo\nMinSizeRel', description: 'Please specify the build type'),
+        choice(name: 'DBUILD_CORE_SHARED', choices: 'OFF\nON', description: 'Build core as shared library'),
+        choice(name: 'DBUILD_EXAMPLES', choices: 'OFF\nON', description: 'BUILD_EXAMPLES'),
+        choice(name: 'DBUILD_TESTS', choices: 'OFF\nON', description: 'BUILD_TESTS'),
+        choice(name: 'DBUILD_CLI', choices: 'OFF\nON', description: 'DBUILD_CLI'),
+        
+        //string(name: 'MAIN_WORKSPACE', defaultValue: env.WORKSPACE , description:'Absolute path to the repository'),
+        string(name: 'ARCH', defaultValue: 'linux64', description: 'Archetecture to build the project for'),//linux64, linux86
+        //string(name: 'DOCKCROSS_FILE', defaultValue: 'None', description: 'Path to dockcross docker file'),//linux64, linux86
+        string(name: 'BUILD_DIRECTORY', defaultValue: 'None', description: 'Path to Build Derectory')
+     ])
+   ])
+
+    timestamps{
+        
+        //set the name of the current buid
+        currentBuild.displayName = params.ARCH + " - " + env.BUILD_ID
+        def artifactDefaultName = "Core.tar.gz"
+
+
+            def runFile = "${params.BUILD_DIRECTORY}/${params.ARCH}"
+            def buildThreadCount = 4
+
+            stage("Checkout"){
+            checkout([$class: 'GitSCM', 
+                        branches: [[name: '*/ci_test_jonathan']], 
+                        doGenerateSubmoduleConfigurations: false, 
+                        extensions: [
+                                    [$class: 'CloneOption', 
+                                        depth: 0, 
+                                        noTags: false, 
+                                        reference: '', 
+                                        shallow: true, 
+                                        timeout: 90], 
+                                    [$class: 'CheckoutOption', 
+                                        timeout: 90]], 
+                        submoduleCfg: [], 
+                        userRemoteConfigs: [[
+                            credentialsId: 'jonathan_github_account', 
+                            url: 'https://github.com/eyesight-tech/eyesight-core-dms.git'
+                            ]]
+                        ])
+
+                echo "finished cloning"
+            }
+
+            stage("Build Core"){
+
+                powershell label: "Create build folder", script: "mkdir ${params.BUILD_DIRECTORY} -Force"
+                
+                def buildscript = """cd ${params.BUILD_DIRECTORY} ; `
+                    cmake ../.. -G "Visual Studio 16 2019" -A Win32 `
+                    -DCMAKE_BUILD_TYPE=${params.DCMAKE_BUILD_TYPE} `
+                    -DBUILD_CORE_SHARED=${params.DBUILD_CORE_SHARED} `
+                    -DBUILD_EXAMPLES=${params.DBUILD_EXAMPLES} `
+                    -DBUILD_TESTS=${params.DBUILD_TESTS} `
+                    -DBUILD_CLI=${params.DBUILD_CLI}"""
+                
+                powershell script: buildscript , label: "Configure CMAKE"
+                
+                buildscript = """cd ${params.BUILD_DIRECTORY} ; `
+                    cmake --build ."""
+
+                powershell script: buildscript , label: "Build Project"
+            }
+    }
+}

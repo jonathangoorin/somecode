@@ -1,0 +1,104 @@
+node(){
+
+    properties([
+     disableConcurrentBuilds(),
+     parameters([
+        choice(name: 'DCMAKE_BUILD_TYPE', choices: 'Release\nDebug\nRelWithDebInfo\nMinSizeRel', description: 'Please specify the build type'),
+        choice(name: 'DBUILD_CORE_SHARED', choices: 'OFF\nON', description: 'Build core as shared library'),
+        choice(name: 'DBUILD_EXAMPLES', choices: 'OFF\nON', description: 'BUILD_EXAMPLES'),
+        choice(name: 'DBUILD_TESTS', choices: 'OFF\nON', description: 'BUILD_TESTS'),
+        choice(name: 'DBUILD_CLI', choices: 'OFF\nON', description: 'DBUILD_CLI')
+     ])
+   ])
+
+    timestamps{
+        def archList = [/* "linux64", "linux86", */ "winx86"]
+        def runFilesDirectory = "builds/dockcross_run_files"
+        def dockerFilesDirectory = "pipeline-as-code/dockerfiles"
+        def buildsDirectory = "builds"
+
+        def artifactDefaultName = "Core.tar.gz"
+
+        def linuxProjectName = 'Dev/00-main'
+        def winProjectName = 'Dev/00-win'
+
+        def buildList = [:]
+
+        stage("Start Builds"){
+            for (architecture in archList){
+                
+                //define downstream job arguments for each architecture
+                def jobArgs = [:]
+                //CMAKE FLAGS
+                jobArgs.put("DCMAKE_BUILD_TYPE", params.DCMAKE_BUILD_TYPE)
+                jobArgs.put("DBUILD_CORE_SHARED",params.DBUILD_CORE_SHARED)
+                jobArgs.put("DBUILD_EXAMPLES", params.DBUILD_EXAMPLES)
+                jobArgs.put("DBUILD_TESTS", params.DBUILD_TESTS)
+                jobArgs.put("DBUILD_CLI", params.DBUILD_CLI)
+                
+                //JENKINS FLAGS
+                if(architecture == 'winx86'){
+                    jobArgs.put("MAIN_JOB_NAME", winProjectName)
+                    jobArgs.put("ARCH", architecture)
+                    jobArgs.put("BUILD_DIRECTORY", "${buildsDirectory}/${architecture}")
+                }
+                else {
+                    node(label: 'linux'){
+                        stage("Checkout"){
+                            checkout([$class: 'GitSCM', 
+                            branches: [[name: '*/ci_test_jonathan']], 
+                            doGenerateSubmoduleConfigurations: false, 
+                            extensions: [
+                                        [$class: 'CloneOption', 
+                                            depth: 0, 
+                                            noTags: false, 
+                                            reference: '', 
+                                            shallow: true, 
+                                            timeout: 90], 
+                                        [$class: 'CheckoutOption', 
+                                            timeout: 90]], 
+                            submoduleCfg: [], 
+                            userRemoteConfigs: [[
+                                credentialsId: 'jonathan_github_account', 
+                                url: 'https://github.com/eyesight-tech/eyesight-core-dms.git'
+                                ]]
+                            ])
+                        }
+
+                        jobArgs.put("NODE_NAME", env.NODE_NAME)
+                        jobArgs.put("MAIN_JOB_NAME", linuxProjectName)
+                        jobArgs.put("MAIN_WORKSPACE", env.WORKSPACE)
+                        jobArgs.put("ARCH", architecture)
+                        jobArgs.put("DOCKCROSS_FILE", "${dockerFilesDirectory}/${architecture}")
+                        jobArgs.put("RUNFILE", "${runFilesDirectory}/${architecture}")
+                        jobArgs.put("BUILD_DIRECTORY", "${buildsDirectory}/${architecture}")
+                    }
+                }
+
+                buildList.put(architecture, buildMainBuildJob(jobArgs))
+            }
+            
+            //buildList['failFast'] = false
+            //start parallel excution of stages
+            parallel(buildList)
+        }
+    }
+}
+
+def buildMainBuildJob(Map args){
+    return{
+        stage("Start Build ${args.ARCH}"){
+            build job: args.MAIN_JOB_NAME, parameters :[
+                    string(name: 'DCMAKE_BUILD_TYPE', value: args.DCMAKE_BUILD_TYPE),
+                    string(name: 'DBUILD_CORE_SHARED', value: args.DBUILD_CORE_SHARED),
+                    string(name: 'DBUILD_EXAMPLES', value: args.DBUILD_EXAMPLES),
+                    string(name: 'DBUILD_TESTS', value: args.DBUILD_TESTS),
+
+                    string(name: 'MAIN_WORKSPACE', value: args.MAIN_WORKSPACE),
+                    string(name: 'ARCH', value: args.ARCH),
+                    string(name: 'DOCKCROSS_FILE', value: args.DOCKCROSS_FILE),
+                    string(name: 'BUILD_DIRECTORY', value: args.BUILD_DIRECTORY)
+                ]
+        }
+    }
+}

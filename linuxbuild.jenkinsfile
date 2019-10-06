@@ -1,0 +1,86 @@
+node("${params.NODE_NAME}"){
+
+    properties([
+     disableConcurrentBuilds(),
+     parameters([
+        choice(
+		choices: 'Release\nDebug\nRelWithDebInfo\nMinSizeRel', 
+		description: 'Please specify the build type', 
+		name: 'DCMAKE_BUILD_TYPE'
+		),
+        choice(
+		choices: 'OFF\nON', 
+		description: 'Build core as shared library', 
+		name: 'DBUILD_CORE_SHARED'
+		),
+        choice(
+		choices: 'OFF\nON', 
+		description: 'BUILD_EXAMPLES', 
+		name: 'DBUILD_EXAMPLES'
+		),
+        choice(
+		choices: 'OFF\nON', 
+		description: 'BUILD_TESTS', 
+		name: 'DBUILD_TESTS'
+		),
+        
+        string(name: 'MAIN_WORKSPACE', defaultValue: env.WORKSPACE , description:'Absolute path to the repository'),
+        string(name: 'ARCH', defaultValue: 'linux64', description: 'Archetecture to build the project for'),//linux64, linux86
+        string(name: 'DOCKCROSS_FILE', defaultValue: 'None', description: 'Path to dockcross docker file'),//linux64, linux86
+        string(name: 'BUILD_DIRECTORY', defaultValue: 'None', description: 'Path to Build Derectory')
+     ])
+   ])
+
+    timestamps{
+        
+        //set the name of the current buid
+        currentBuild.displayName = params.ARCH + " - " + env.BUILD_ID
+        def artifactDefaultName = "Core.tar.gz"
+
+        // Start at upstream folder
+        dir(params.MAIN_WORKSPACE){
+
+            def runFile = "${params.BUILD_DIRECTORY}/${params.ARCH}"
+            def buildThreadCount = 4
+
+            stage("Build Dockross Image for ${params.ARCH}"){
+
+                    // build image
+                    docker.build(params.ARCH , "--file ${params.DOCKCROSS_FILE} .")
+
+                    // create build directory 
+                    sh script: "mkdir -p ${BUILD_DIRECTORY}", label: "Create Build directory"
+
+                    // create dockcross run file 
+                    sh script: "docker run --rm  ${params.ARCH} > ${runFile} && chmod +x ${runFile}", label: "Create Dockross run file"
+            }
+            
+            stage("Build Core"){
+                
+                sh script: """${runFile} bash -c 'cd ${params.BUILD_DIRECTORY} && \
+                    cmake ../.. \
+                    -DCMAKE_BUILD_TYPE=${params.DCMAKE_BUILD_TYPE} \
+                    -DBUILD_CORE_SHARED=${params.DBUILD_CORE_SHARED} \
+                    -DBUILD_EXAMPLES=${params.DBUILD_EXAMPLES} \
+                    -DBUILD_TESTS=${params.DBUILD_TESTS}
+                    '""" , label: "CMAKE Configure"
+
+                sh script: """${runFile} bash -c 'cd ${params.BUILD_DIRECTORY} && sudo make -j${buildThreadCount}'""", label: "CMAKE Build"
+            }
+
+            stage("Archive artifacts"){
+                sh script: """${runFile} bash -c 'cd ${params.BUILD_DIRECTORY} && \
+                        cpack
+                    '""", label: "CPACK create artifacts"
+
+            //    archiveArtifacts artifacts: "${params.BUILD_DIRECTORY}/${artifactDefaultName}", fingerprint: true, onlyIfSuccessful: true
+            }
+        }
+       
+        
+
+        //   		command = './' + self.target_platform + ' -a \"-v/.ccache:/.ccache\" bash -c \'cd ' + BUILD_DIRECTORY + ' && cpack && mv ' + CORE_ARTIFACT_NAME + ' ..\''
+
+
+    }
+}
