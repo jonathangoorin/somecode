@@ -1,5 +1,5 @@
-node("linux"){
-
+node("linux"){  
+//yo
     timestamps{
         stage("Checkout"){
             checkout changelog: false, 
