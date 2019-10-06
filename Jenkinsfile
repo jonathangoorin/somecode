@@ -14,6 +14,7 @@ node("linux"){
                                 url: 'https://github.com/jonathangoorin/somecode.git'
                                 ]]
                         ]
+        sh "touch txt.txt"
     }
     }
 }
