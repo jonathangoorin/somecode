@@ -19,7 +19,6 @@ node("linux"){
         
         sh "touch txt.txt"
     }
-    }
 }
 
 //jonathangooringithub
