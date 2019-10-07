@@ -10,7 +10,7 @@ node("linux"){
                             extensions: [[$class: 'CheckoutOption', timeout: 90]], 
                             submoduleCfg: [], 
                             userRemoteConfigs: [[
-                                credentialsId: 'jonathangooringithub', 
+                                credentialsId: 'jonathangithub', 
                                 url: 'https://github.com/jonathangoorin/somecode.git'
                                 ]]
                         ]
@@ -18,3 +18,5 @@ node("linux"){
     }
     }
 }
+
+//jonathangooringithub
