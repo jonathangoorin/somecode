@@ -5,12 +5,12 @@ node("linux"){
             checkout changelog: false, 
                     poll: false, 
                     scm: [$class: 'GitSCM', 
-                            branches: [[name: '*/master']], 
+                            branches: [[name: '${sha1}']], 
                             doGenerateSubmoduleConfigurations: false, 
                             extensions: [[$class: 'CheckoutOption', timeout: 90]], 
                             submoduleCfg: [], 
                             userRemoteConfigs: [[
-                                credentialsId: 'jonathangithub', 
+                                credentialsId: 'jonathangooringithub', 
                                 url: 'https://github.com/jonathangoorin/somecode.git'
                                 ]]
                         ]
