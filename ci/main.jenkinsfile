@@ -14,18 +14,26 @@ node(){
 
 
     def targetList = ["linux64", "linux86", "winx86", "win64"]
-    def linuxJobName 
+    def linuxJobName = "DMS-Core-PullRequest-linux"
+    def windowsJobName = "DMS-Core-PullRequest-windows"
 
     stage("Start Builds"){
         for(target in targetList){
 
             if(target.startsWith("linux")){
-                
-                //start linux job
+
+                pipelineJob(linuxJobName) {
+                    definition {
+                        cps {
+                            script(readFileFromWorkspace('ci/linux.jenkinsfile'))
+                            sandbox()     
+                        }
+                    }
+                }
             }
 
             if(target.startsWith("win")){
-                //start windows job
+                echo "here will be windows job"
             }
         }
     }
