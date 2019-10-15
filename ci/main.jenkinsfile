@@ -67,7 +67,7 @@ Requirements:
 
             if(target.startsWith("win")){
                 echo "here will be windows job"
-                //jobArgs.put("MAIN_JOB_NAME", windowsJobName)
+                jobArgs.put("MAIN_JOB_NAME", windowsJobName)
             }
 
             buildList.put(target, buildMainBuildJob(jobArgs))
