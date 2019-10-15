@@ -1,7 +1,7 @@
 def mainJobName = "DMS-Core-Main2"
 def mainJobScriptPath = "ci/main.jenkinsfile"
 
-pipelineJob(values.mainJobName) {
+pipelineJob(mainJobName) {
 
     definition {
         cps {
