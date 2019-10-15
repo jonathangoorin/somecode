@@ -1,10 +1,11 @@
-pipelineJob(values.mainJobName) {
+def mainJobName = "DMS-Core-Main2"
+def mainJobScriptPath = "ci/main.jenkinsfile"
 
-    def values = readJSON file: "ci/values.json"
+pipelineJob(values.mainJobName) {
 
     definition {
         cps {
-            script(readFileFromWorkspace(values.mainJobScriptPath))
+            script(readFileFromWorkspace(mainJobScriptPath))
             sandbox()
         }
     }
