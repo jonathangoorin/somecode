@@ -95,7 +95,8 @@ def getBuildJobClosure(Map jobArgs){
                     jobArgs.put("credentialsId", jobArgs.credentialsId),
                     jobArgs.put("repositoryPath", jobArgs.repositoryPath),
                     jobArgs.put("refScpec", jobArgs.refScpec),
-                    jobArgs.put("branchSha1", jobArgs.branchSha1),
+                    jobArgs.put("branchSha1", jobArgs.branchSha1)
+                    ]
         }
     }
 }
