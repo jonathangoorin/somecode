@@ -62,18 +62,21 @@ Requirements:
             }
 
             if(target.startsWith("linux")){
+                echo "configuring the linux job for ${target}"
                 jobArgs.put("MAIN_JOB_NAME", linuxJobName)
             }
 
             if(target.startsWith("win")){
-                echo "here will be windows job"
+                echo "configuring the windows job for ${target}"
                 jobArgs.put("MAIN_JOB_NAME", windowsJobName)
             }
 
-            buildList.put(target, buildMainBuildJob(jobArgs))
+            echo "added it to the list"
+            buildList.put(target, getBuildJobClosure(jobArgs))
         }
 
         // start the jobs
+        echo "start the builds"
         parallel(buildList)
     }
 }
