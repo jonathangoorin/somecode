@@ -36,7 +36,7 @@ node(){
             jobArgs.put("DBUILD_CLI", params.DBUILD_CLI)
 
             jobArgs.put("credentialsId", credentialsId)
-            jobArgs.put("ghprbPullId", ${ghprbPullId})
+            jobArgs.put("ghprbPullId", ghprbPullId)
             jobArgs.put("sha1", ${sha1})
 
 
