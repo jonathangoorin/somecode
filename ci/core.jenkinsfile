@@ -1,0 +1,10 @@
+def values = readJSON file: "ci/values.json"
+
+pipelineJob(values.mainJobName) {
+    definition {
+        cps {
+            script(readFileFromWorkspace(values.mainJobScriptPath))
+            sandbox()
+        }
+    }
+}
