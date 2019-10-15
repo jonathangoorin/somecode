@@ -1,12 +1,17 @@
-def mainJobName = "DMS-Core-Main2"
-def mainJobScriptPath = "ci/main.jenkinsfile"
+node("linux"){
+    properties([
+     disableConcurrentBuilds(),
+     parameters([
+        choice(name: 'DCMAKE_BUILD_TYPE', choices: 'Release\nDebug\nRelWithDebInfo\nMinSizeRel', description: 'Please specify the build type'),
+        choice(name: 'DBUILD_CORE_SHARED', choices: 'ON\nOFF', description: 'Build core as shared library'),
+        choice(name: 'DBUILD_EXAMPLES', choices: 'OFF\nON', description: 'BUILD_EXAMPLES'),
+        choice(name: 'DBUILD_TESTS', choices: 'OFF\nON', description: 'BUILD_TESTS'),
+        choice(name: 'DBUILD_CLI', choices: 'OFF\nON', description: 'DBUILD_CLI'),
+        text(name: 'sha1', defaultValue: '*/master', description: 'hash of the branch'),
+        text(name: 'refSpec', defaultValue: '', description: 'refSpec for git to checkout')
+     ])
 
-pipelineJob(mainJobName) {
-
-    definition {
-        cps {
-            script(readFileFromWorkspace(mainJobScriptPath))
-            sandbox()
-        }
-    }
-}
+     stage("test stage"){
+         echo "this is test stage and it is built on ${env.NODE_NAME}"
+     }
+   ])

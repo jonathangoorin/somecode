@@ -1,4 +1,13 @@
 node(){
+
+/*
+written by Jonathan Goorin oct 2019
+
+Requirements:
+1: linux nodes labled as "linux"
+2: windows nodes labeled as "windows"
+*/
+
     properties([
      disableConcurrentBuilds(),
      parameters([
@@ -39,12 +48,12 @@ node(){
 
             //github pull request builder parameters workaround to launch manual
             try{
-                jobArgs.put("ghprbPullId", ghprbPullId)
+                jobArgs.put("refScpec", "+refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*")
                 jobArgs.put("branchSha1", sha1)
             }
             catch(err){
                 echo "dry run defining the variables "
-                jobArgs.put("ghprbPullId", "fake-pull-id")
+                jobArgs.put("refScpec", "")
                 jobArgs.put("branchSha1", "*/master")
             }
 
