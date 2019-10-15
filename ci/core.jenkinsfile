@@ -1,12 +1,14 @@
 def mainJobName = "DMS-Core-Main2"
 def mainJobScriptPath = "ci/main.jenkinsfile"
 
-pipelineJob(mainJobName) {
+node(){
+    pipelineJob(mainJobName) {
 
-    definition {
-        cps {
-            script(readFileFromWorkspace(mainJobScriptPath))
-            sandbox()
+        definition {
+            cps {
+                script(readFileFromWorkspace(mainJobScriptPath))
+                sandbox()
+            }
         }
     }
 }
