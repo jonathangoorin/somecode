@@ -10,8 +10,10 @@ node("linux"){
         text(name: 'sha1', defaultValue: '*/master', description: 'hash of the branch'),
         text(name: 'refSpec', defaultValue: '', description: 'refSpec for git to checkout')
      ])
-
-     stage("test stage"){
-         echo "this is test stage and it is built on ${env.NODE_NAME}"
-     }
    ])
+
+    stage("test stage"){
+         echo "this is test stage and it is built on ${env.NODE_NAME}"
+    }
+
+}
