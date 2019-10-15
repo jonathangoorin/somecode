@@ -37,7 +37,7 @@ node(){
 
             jobArgs.put("credentialsId", credentialsId)
             jobArgs.put("ghprbPullId", ghprbPullId)
-            jobArgs.put("sha1", ${sha1})
+            jobArgs.put("branchSha1", sha1)
 
 
             if(target.startsWith("linux")){
