@@ -20,8 +20,6 @@ node(){
 
     def credentialsId = "jonathangithub"
     def repositoryPath = "https://github.com/jonathangoorin/somecode/"
-    def ghprbPullId = ghprbPullId ?: "pullId"
-    def sha1 = sha1 ?: "sha1"
 
     stage("Start Builds"){
         for(target in targetList){
@@ -29,7 +27,7 @@ node(){
             //define downstream (child) jobs parameters
             def jobArgs = [:]
 
-            //CMAKE FLAGS
+            //CMAKE Flags
             jobArgs.put("DCMAKE_BUILD_TYPE", params.DCMAKE_BUILD_TYPE)
             jobArgs.put("DBUILD_CORE_SHARED",params.DBUILD_CORE_SHARED)
             jobArgs.put("DBUILD_EXAMPLES", params.DBUILD_EXAMPLES)
@@ -38,9 +36,18 @@ node(){
             jobArgs.put("DBUILD_CLI", params.DBUILD_CLI)
 
             jobArgs.put("credentialsId", credentialsId)
-            jobArgs.put("ghprbPullId", ghprbPullId)
-            jobArgs.put("branchSha1", sha1)
+            jobArgs.put("repositoryPath", repositoryPath)
 
+            //github pull request builder parameters workaround to launch manual
+            try{
+                jobArgs.put("ghprbPullId", ghprbPullId)
+                jobArgs.put("branchSha1", sha1)
+            }
+            catch(err){
+                echo "dry run defining the variables "
+                jobArgs.put("ghprbPullId", "fake pull id")
+                jobArgs.put("branchSha1", "*/master")
+            }
 
             if(target.startsWith("linux")){
                 
