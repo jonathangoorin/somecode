@@ -1,6 +1,7 @@
-def values = readJSON file: "ci/values.json"
-
 pipelineJob(values.mainJobName) {
+
+    def values = readJSON file: "ci/values.json"
+
     definition {
         cps {
             script(readFileFromWorkspace(values.mainJobScriptPath))
