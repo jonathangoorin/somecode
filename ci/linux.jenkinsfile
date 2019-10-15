@@ -2,12 +2,13 @@ node("linux"){
     properties([
      disableConcurrentBuilds(),
      parameters([
+        text(name: 'TARGET', defaultValue: 'linux64', description: 'Target architecture to build the project'),
         choice(name: 'DCMAKE_BUILD_TYPE', choices: 'Release\nDebug\nRelWithDebInfo\nMinSizeRel', description: 'Please specify the build type'),
         choice(name: 'DBUILD_CORE_SHARED', choices: 'ON\nOFF', description: 'Build core as shared library'),
         choice(name: 'DBUILD_EXAMPLES', choices: 'OFF\nON', description: 'BUILD_EXAMPLES'),
         choice(name: 'DBUILD_TESTS', choices: 'OFF\nON', description: 'BUILD_TESTS'),
         choice(name: 'DBUILD_CLI', choices: 'OFF\nON', description: 'DBUILD_CLI'),
-        text(name: 'sha1', defaultValue: '*/master', description: 'hash of the branch'),
+        text(name: 'sha1', defaultValue: '*/master', description: 'branch to checkout'),
         text(name: 'refSpec', defaultValue: '', description: 'refSpec for git to checkout')
      ])
    ])

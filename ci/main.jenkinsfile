@@ -30,17 +30,21 @@ Requirements:
     def repositoryPath = "https://github.com/jonathangoorin/somecode/"
 
     stage("Start Builds"){
+
+        //jobs to build in parallel
+        def buildList = [:]
+
         for(target in targetList){
 
             //define downstream (child) jobs parameters
             def jobArgs = [:]
+            jobArgs.put("TARGET", target)
 
             //CMAKE Flags
             jobArgs.put("DCMAKE_BUILD_TYPE", params.DCMAKE_BUILD_TYPE)
             jobArgs.put("DBUILD_CORE_SHARED",params.DBUILD_CORE_SHARED)
             jobArgs.put("DBUILD_EXAMPLES", params.DBUILD_EXAMPLES)
             jobArgs.put("DBUILD_TESTS", params.DBUILD_TESTS)
-            jobArgs.put("DBUILD_CLI", params.DBUILD_CLI)
             jobArgs.put("DBUILD_CLI", params.DBUILD_CLI)
 
             jobArgs.put("credentialsId", credentialsId)
@@ -58,12 +62,37 @@ Requirements:
             }
 
             if(target.startsWith("linux")){
-                
+                jobArgs.put("MAIN_JOB_NAME", linuxJobName)
             }
 
             if(target.startsWith("win")){
                 echo "here will be windows job"
+                //jobArgs.put("MAIN_JOB_NAME", windowsJobName)
             }
+
+            buildList.put(target, buildMainBuildJob(jobArgs))
+        }
+
+        // start the jobs
+        parallel(buildList)
+    }
+}
+
+
+def getBuildJobClosure(Map jobArgs){
+    return{
+        stage("Start Build ${jobArgs.TARGET}"){
+            build job: jobArgs.MAIN_JOB_NAME, parameters :[
+                    string(name: 'TARGET', value: jobArgs.TARGET),
+                    string(name: 'DCMAKE_BUILD_TYPE', value: jobArgs.DCMAKE_BUILD_TYPE),
+                    string(name: 'DBUILD_CORE_SHARED', value: jobArgs.DBUILD_CORE_SHARED),
+                    string(name: 'DBUILD_EXAMPLES', value: jobArgs.DBUILD_EXAMPLES),
+                    string(name: 'DBUILD_TESTS', value: jobArgs.DBUILD_TESTS),
+
+                    jobArgs.put("credentialsId", jobArgs.credentialsId),
+                    jobArgs.put("repositoryPath", jobArgs.repositoryPath),
+                    jobArgs.put("refScpec", jobArgs.refScpec),
+                    jobArgs.put("branchSha1", jobArgs.branchSha1),
         }
     }
 }
