@@ -1,5 +1,11 @@
 node(){
 
+
+// github pull
+// checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, honorRefspec: true, noTags: false, reference: '', shallow: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'jonathangithub', refspec: '+refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*', url: 'https://github.com/jonathangoorin/somecode/']]])
+
+
+
     properties([
      disableConcurrentBuilds(),
      parameters([

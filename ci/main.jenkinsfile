@@ -1,16 +1,4 @@
 node(){
-
-    def values = readJSON file: "ci/values.json"
-    pipelineJob(values.mainJobName) {
-        definition {
-            cps {
-                script(readFileFromWorkspace(values.mainJobScriptPath))
-                sandbox()
-            }
-        }
-    }
-
-
     properties([
      disableConcurrentBuilds(),
      parameters([
@@ -22,25 +10,36 @@ node(){
      ])
    ])
 
+    def targetList = ["linux64", "linux86", "win86", "win64"]
 
+    def mainJobName = "DMS-Core-Main"
+    def linuxJobName = "DMS-Core-Linux"
+    def windowsJobName = "DMS-Core-Windows"
 
-    def targetList = ["linux64", "linux86", "winx86", "win64"]
-    def linuxJobName = "DMS-Core-PullRequest-linux"
-    def windowsJobName = "DMS-Core-PullRequest-windows"
+    def credentialsId = "jonathangithub"
+    def repositoryPath = "https://github.com/jonathangoorin/somecode/"
+    def refSpec = "+refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*"
 
     stage("Start Builds"){
         for(target in targetList){
 
-            if(target.startsWith("linux")){
+            //define downstream (child) jobs parameters
+            def jobArgs = [:]
 
-                pipelineJob(linuxJobName) {
-                    definition {
-                        cps {
-                            script(readFileFromWorkspace('ci/linux.jenkinsfile'))
-                            sandbox()     
-                        }
-                    }
-                }
+            //CMAKE FLAGS
+            jobArgs.put("DCMAKE_BUILD_TYPE", params.DCMAKE_BUILD_TYPE)
+            jobArgs.put("DBUILD_CORE_SHARED",params.DBUILD_CORE_SHARED)
+            jobArgs.put("DBUILD_EXAMPLES", params.DBUILD_EXAMPLES)
+            jobArgs.put("DBUILD_TESTS", params.DBUILD_TESTS)
+            jobArgs.put("DBUILD_CLI", params.DBUILD_CLI)
+            jobArgs.put("DBUILD_CLI", params.DBUILD_CLI)
+
+            jobArgs.put("credentialsId", credentialsId)
+            jobArgs.put("ghprbPullId", ${ghprbPullId})
+            jobArgs.put("sha1", ${sha1})
+
+            if(target.startsWith("linux")){
+                
             }
 
             if(target.startsWith("win")){
