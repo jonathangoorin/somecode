@@ -6,7 +6,9 @@ node(){
         choice(name: 'DBUILD_CORE_SHARED', choices: 'ON\nOFF', description: 'Build core as shared library'),
         choice(name: 'DBUILD_EXAMPLES', choices: 'OFF\nON', description: 'BUILD_EXAMPLES'),
         choice(name: 'DBUILD_TESTS', choices: 'OFF\nON', description: 'BUILD_TESTS'),
-        choice(name: 'DBUILD_CLI', choices: 'OFF\nON', description: 'DBUILD_CLI')
+        choice(name: 'DBUILD_CLI', choices: 'OFF\nON', description: 'DBUILD_CLI'),
+
+        text(name: 'sha1', defaultValue: '*/master', description: 'parameter to enable manual running')
      ])
    ])
 
@@ -18,7 +20,6 @@ node(){
 
     def credentialsId = "jonathangithub"
     def repositoryPath = "https://github.com/jonathangoorin/somecode/"
-    def refSpec = "+refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*"
 
     stage("Start Builds"){
         for(target in targetList){
@@ -37,6 +38,7 @@ node(){
             jobArgs.put("credentialsId", credentialsId)
             jobArgs.put("ghprbPullId", ${ghprbPullId})
             jobArgs.put("sha1", ${sha1})
+
 
             if(target.startsWith("linux")){
                 
