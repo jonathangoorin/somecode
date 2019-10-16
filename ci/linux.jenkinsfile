@@ -29,7 +29,7 @@ node("linux"){
             submoduleCfg: [], 
             userRemoteConfigs: [[credentialsId: params.credentialsId, 
                                 refspec: params.refSpec, 
-                                url: params.credentialsId ]]
+                                url: params.repositoryPath ]]
         ])
     }
 
