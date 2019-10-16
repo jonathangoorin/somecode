@@ -1,0 +1,7 @@
+FROM dockcross/windows-static-x86
+
+#ENVIORMENT
+ENV PLATFORM=windows-static-x86
+ENV DEFAULT_DOCKCROSS_IMAGE=windows-static-x86
+          
+WORKDIR /work
