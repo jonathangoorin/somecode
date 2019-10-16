@@ -25,7 +25,7 @@ node("linux"){
       def artifactDefaultName = "Core.tar.gz"
 
       def dockcrossFilePath = "ci/dockerfiles/${params.TARGET}"
-      def dockcrossRunFilePath = "${buildDirectory}/${params.TARGET}/${params.TARGET}.sh"
+      def dockcrossRunFilePath = "${buildDirectory}/${params.TARGET}.sh"
       def buildThreadCount = 4
 
 
