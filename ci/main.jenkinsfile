@@ -8,6 +8,8 @@ Requirements:
 2: windows nodes labeled as "windows"
 3: GHPRB plugin (GitHub Pull Request Builder)
 4: Pipeline plugin
+5: Yet Another Build Visualizer
+6: Throttle Concurrent Builds	
 */
 
     properties([

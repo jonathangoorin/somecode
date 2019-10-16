@@ -8,13 +8,29 @@ node("linux"){
         choice(name: 'DBUILD_EXAMPLES', choices: 'OFF\nON', description: 'BUILD_EXAMPLES'),
         choice(name: 'DBUILD_TESTS', choices: 'OFF\nON', description: 'BUILD_TESTS'),
         choice(name: 'DBUILD_CLI', choices: 'OFF\nON', description: 'DBUILD_CLI'),
+
+        text(name: 'credentialsId', description: 'JENKINS Credential id'),
+        text(name: 'repositoryPath', description: 'http path to repository to checkout'),
         text(name: 'sha1', defaultValue: '*/master', description: 'branch to checkout'),
         text(name: 'refSpec', defaultValue: '', description: 'refSpec for git to checkout')
      ])
    ])
 
-    stage("test stage"){
-         echo "this is test stage and it is built on ${env.NODE_NAME}"
+    stage("Clone"){
+          checkout([$class: 'GitSCM', 
+            branches: [[name: params.sha1]], 
+            doGenerateSubmoduleConfigurations: false, 
+            extensions: [[$class: 'CloneOption', 
+                            depth: 0, 
+                            honorRefspec: true, 
+                            noTags: false, 
+                            reference: '', 
+                            shallow: true]], 
+            submoduleCfg: [], 
+            userRemoteConfigs: [[credentialsId: params.credentialsId, 
+                                refspec: params.refSpec, 
+                                url: params.credentialsId ]]
+        ])
     }
 
 }
