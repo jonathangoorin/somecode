@@ -6,6 +6,8 @@ written by Jonathan Goorin oct 2019
 Requirements:
 1: linux nodes labled as "linux"
 2: windows nodes labeled as "windows"
+3: GHPRB plugin (GitHub Pull Request Builder)
+4: Pipeline plugin
 */
 
     properties([
@@ -53,26 +55,26 @@ Requirements:
             //github pull request builder parameters workaround to launch manual
             try{
                 jobArgs.put("refScpec", "+refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*")
-                jobArgs.put("branchSha1", sha1)
+                jobArgs.put("sha1", sha1)
             }
             catch(err){
                 echo "dry run defining the variables "
                 jobArgs.put("refScpec", "")
-                jobArgs.put("branchSha1", "*/master")
+                jobArgs.put("sha1", "*/master")
             }
 
             if(target.startsWith("linux")){
                 echo "configuring the linux job for ${target}"
                 jobArgs.put("MAIN_JOB_NAME", linuxJobName)
+                echo "added it to the list"
+                buildList.put(target, getBuildJobClosure(jobArgs))
             }
 
             if(target.startsWith("win")){
                 echo "configuring the windows job for ${target}"
-                jobArgs.put("MAIN_JOB_NAME", windowsJobName)
-            }
-
-            echo "added it to the list"
-            buildList.put(target, getBuildJobClosure(jobArgs))
+               // jobArgs.put("MAIN_JOB_NAME", windowsJobName)
+               //buildList.put(target, getBuildJobClosure(jobArgs))
+            }            
         }
 
         // start the jobs
@@ -95,7 +97,7 @@ def getBuildJobClosure(Map jobArgs){
                     jobArgs.put("credentialsId", jobArgs.credentialsId),
                     jobArgs.put("repositoryPath", jobArgs.repositoryPath),
                     jobArgs.put("refScpec", jobArgs.refScpec),
-                    jobArgs.put("branchSha1", jobArgs.branchSha1)
+                    jobArgs.put("sha1", jobArgs.sha1)
                     ]
         }
     }
