@@ -93,11 +93,11 @@ def getBuildJobClosure(Map jobArgs){
                     string(name: 'DBUILD_CORE_SHARED', value: jobArgs.DBUILD_CORE_SHARED),
                     string(name: 'DBUILD_EXAMPLES', value: jobArgs.DBUILD_EXAMPLES),
                     string(name: 'DBUILD_TESTS', value: jobArgs.DBUILD_TESTS),
-
-                    jobArgs.put("credentialsId", jobArgs.credentialsId),
-                    jobArgs.put("repositoryPath", jobArgs.repositoryPath),
-                    jobArgs.put("refScpec", jobArgs.refScpec),
-                    jobArgs.put("sha1", jobArgs.sha1)
+                    
+                    string(name: "credentialsId", value: jobArgs.credentialsId),
+                    string(name: "repositoryPath", value: jobArgs.repositoryPath),
+                    string(name: "refScpec", value: jobArgs.refScpec),
+                    string(name: "sha1", value: jobArgs.sha1)
                     ]
         }
     }
