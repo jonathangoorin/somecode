@@ -57,10 +57,20 @@ node("linux"){
         sh script: "docker run --rm  ${params.TARGET} > ${dockcrossRunFilePath} && chmod +x ${dockcrossRunFilePath}", label: "Create Dockross run file"
       }
 
-      dir(buildDirectory){
-        stage("Compile"){
-          sh script: "pwd", label: "check it"
-        }
+      stage("Build Core"){
+          sh script: """${runFile} bash -c 'cd ${params.BUILD_DIRECTORY} && \
+              cmake ../.. \
+              -DCMAKE_BUILD_TYPE=${params.DCMAKE_BUILD_TYPE} \
+              -DBUILD_CORE_SHARED=${params.DBUILD_CORE_SHARED} \
+              -DBUILD_EXAMPLES=${params.DBUILD_EXAMPLES} \
+              -DBUILD_TESTS=${params.DBUILD_TESTS}
+              '""" , 
+              label: "CMAKE Configure"
+
+          sh script: """${runFile} bash -c 'cd ${params.BUILD_DIRECTORY} && \
+                sudo make -j${buildThreadCount}'""", 
+              label: "CMAKE Build"
+      }
       }
     }
 }

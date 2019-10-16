@@ -31,8 +31,9 @@ Requirements:
     def windowsJobName = "DMS-Core-Windows"
 
     def credentialsId = "jonathangithub"
-    def repositoryPath = "https://github.com/jonathangoorin/somecode/"
-
+    //def repositoryPath = "https://github.com/jonathangoorin/somecode/"
+    def repositoryPath = "https://github.com/eyesight-tech/eyesight-core-dms.git"
+    
     stage("Start Builds"){
 
         //jobs to build in parallel
