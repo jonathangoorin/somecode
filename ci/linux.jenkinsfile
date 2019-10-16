@@ -48,7 +48,7 @@ node("linux"){
 
       stage("Dockcross Image ${params.TARGET}"){
         // build image
-        docker.build(params.TARGET , "--file ${dockcrossFilePath} .")
+        sh script: "docker build -t ${params.TARGET} --file ${dockcrossFilePath} .", label: "Build Docker Image"
 
         // create build directory 
         sh script: "mkdir -p ${buildDirectory}", label: "Create Build directory"
