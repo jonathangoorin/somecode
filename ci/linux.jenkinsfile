@@ -56,7 +56,11 @@ node("linux"){
         // create dockcross run file 
         sh script: "docker run --rm  ${params.TARGET} > ${dockcrossRunFilePath} && chmod +x ${dockcrossRunFilePath}", label: "Create Dockross run file"
       }
+
+      dir(buildDirectory){
+        stage("Compile"){
+          sh script: "pwd", label: "check it"
+        }
+      }
     }
-
-
 }
