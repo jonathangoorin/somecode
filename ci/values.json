@@ -1,4 +1,0 @@
-{
-    "mainJobName" : "DMS-Core-Main2",
-    "mainJobScriptPath": "ci/main.jenkinsfile"
-}
