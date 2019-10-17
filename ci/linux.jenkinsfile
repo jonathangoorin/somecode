@@ -30,10 +30,6 @@ node("linux"){
 
 
       stage("Clone"){
-
-        sh script: "git gc --prune=now"
-        //sh script: "git remote prune origin"
-
           checkout([$class: 'GitSCM', 
             branches: [[name: params.sha1]], 
             doGenerateSubmoduleConfigurations: false, 
@@ -48,7 +44,7 @@ node("linux"){
                             ],
             submoduleCfg: [], 
             userRemoteConfigs: [[credentialsId: params.credentialsId, 
-                               // refspec: params.refSpec, 
+                                refspec: params.refSpec, 
                                 url: params.repositoryPath ]]
             ])
       }
