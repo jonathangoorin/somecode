@@ -11,7 +11,7 @@ node("linux"){
 
         text(name: 'credentialsId', description: 'JENKINS Credential id'),
         text(name: 'repositoryPath', description: 'http path to repository to checkout'),
-        text(name: 'sha1', defaultValue: '*/master', description: 'branch to checkout'),
+        text(name: 'sha1', defaultValue: '*/ci_test_jonathan', description: 'branch to checkout'),
         text(name: 'refSpec', defaultValue: '', description: 'refSpec for git to checkout')
      ])
    ])
