@@ -38,7 +38,9 @@ node("linux"){
                             honorRefspec: true, 
                             noTags: false, 
                             reference: '', 
-                            shallow: true]], 
+                            shallow: true],
+                            [$class: 'CheckoutOption',timeout: 90]
+                            ],
             submoduleCfg: [], 
             userRemoteConfigs: [[credentialsId: params.credentialsId, 
                                 refspec: params.refSpec, 
