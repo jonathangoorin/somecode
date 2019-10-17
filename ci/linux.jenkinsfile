@@ -56,7 +56,7 @@ node("linux"){
         // create dockcross run file 
         sh script: "docker run --rm  ${params.TARGET} > ${dockcrossRunFilePath} && chmod +x ${dockcrossRunFilePath}", label: "Create Dockross run file"
       }
-
+      /*
       stage("Build Core"){
           sh script: """${runFile} bash -c 'cd ${params.BUILD_DIRECTORY} && \
               cmake ../.. \
@@ -71,6 +71,6 @@ node("linux"){
                 sudo make -j${buildThreadCount}'""", 
               label: "CMAKE Build"
       }
-      }
+      */
     }
 }
