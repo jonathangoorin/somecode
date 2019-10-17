@@ -31,7 +31,8 @@ node("linux"){
 
       stage("Clone"){
 
-        sh script: "git gc --prune=now && git remote prune origin"
+        sh script: "git gc --prune=now"
+        //sh script: "git remote prune origin"
 
           checkout([$class: 'GitSCM', 
             branches: [[name: params.sha1]], 
