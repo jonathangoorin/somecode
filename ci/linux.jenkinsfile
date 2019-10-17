@@ -42,7 +42,8 @@ node("linux"){
                             honorRefspec: true, 
                             noTags: false, 
                             reference: '', 
-                            shallow: true],
+                            shallow: true,
+                            timeout: 90],
                             [$class: 'CheckoutOption',timeout: 90]
                             ],
             submoduleCfg: [], 
